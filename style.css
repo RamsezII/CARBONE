@@ -4,6 +4,7 @@ body {
     font-family: "Fira Mono", "Consolas", monospace;
     margin: 0;
     padding: 0;
+    font-weight: bold;
 }
 
 #terminal {
@@ -16,6 +17,7 @@ body {
     box-sizing: border-box;
     overflow-y: auto;
     box-shadow: 0 0 20px #1118;
+    font-weight: bold;
 }
 
 .prompt {
@@ -138,6 +140,7 @@ body {
 .output {
     white-space: pre-wrap;
     color: #eee;
+    font-weight: bold;
     /* margin-left: 1em; */
 }
 
