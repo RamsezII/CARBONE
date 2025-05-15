@@ -4,7 +4,8 @@ body {
     font-family: "Fira Mono", "Consolas", monospace;
     margin: 0;
     padding: 0;
-    font-weight: bold;
+    font-size: 1.15em;
+    font-weight: normal;
 }
 
 #terminal {
@@ -17,7 +18,7 @@ body {
     box-sizing: border-box;
     overflow-y: auto;
     box-shadow: 0 0 20px #1118;
-    font-weight: bold;
+    font-weight: normal;
 }
 
 .prompt {
@@ -38,14 +39,14 @@ body {
 /* Harmonisation du prompt et de la zone éditable pour un rendu terminal natif */
 .input-line {
     font-family: "Fira Mono", "Consolas", monospace;
-    font-size: 1em;
+    font-size: 1.15em;
     line-height: 1.5em;
     color: #eee;
     display: flex;
     align-items: baseline;
     margin: 0;
     padding: 0;
-    font-weight: bold;
+    font-weight: normal;
 }
 
 .input-line .prompt {
@@ -140,7 +141,8 @@ body {
 .output {
     white-space: pre-wrap;
     color: #eee;
-    font-weight: bold;
+    font-size: 1.15em;
+    font-weight: normal;
     /* margin-left: 1em; */
 }
 
@@ -157,4 +159,12 @@ input {
 ::selection {
     background: #3465a4;
     color: #fff;
+}
+
+.input-line .prompt,
+.input-line .cwd,
+.input-line .dollar,
+.input-line .terminal-input,
+.input-line .typed-cmd {
+    font-weight: bold;
 }
