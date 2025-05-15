@@ -138,12 +138,15 @@ async function handleCommand(cmd) {
                 newPath += '/';
             newPath = sanitizePath(newPath);
             // Debug output
+            // Remove this block to avoid double URL display on cd command
+            /*
             const debugOutput = document.createElement('div');
             debugOutput.style.color = '#bbb'; // light gray
             debugOutput.style.fontStyle = 'italic';
             debugOutput.style.whiteSpace = 'pre-wrap';
             debugOutput.textContent = baseUrl + newPath.replace(/^\/+/, '');
             terminal.appendChild(debugOutput);
+            */
             // Vérifie si le dossier existe
             let files = await fetchDir(newPath);
             if (!files) {
