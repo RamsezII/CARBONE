@@ -44,7 +44,111 @@ function printPrompt() {
             }
             e.preventDefault();
         }
+        // Tab for autocomplete
+        else if (e.key === 'Tab') {
+            e.preventDefault();
+            await handleAutocomplete(input);
+        }
     });
+
+    // Container for autocomplete suggestions
+    let autocompleteContainer = null;
+
+    async function handleAutocomplete(input) {
+        const currentValue = input.value;
+        const cursorPos = input.selectionStart;
+
+        // Split input into command and args
+        const beforeCursor = currentValue.slice(0, cursorPos);
+        const tokens = beforeCursor.trim().split(/\s+/);
+        const command = tokens[0] || '';
+        const arg = tokens.length > 1 ? tokens[tokens.length - 1] : '';
+
+        // Determine autocomplete options
+        let options = [];
+
+        if (tokens.length === 1) {
+            // Autocomplete command names
+            const commands = ['ls', 'cd', 'cat', 'help', '?'];
+            options = commands.filter(c => c.startsWith(command));
+        } else {
+            // Autocomplete file or directory names in current directory
+            let base = cwd.endsWith('/') ? cwd : cwd + '/';
+            let files = await fetchDir(base);
+            if (!files) files = [];
+            options = files.filter(f => f.startsWith(arg));
+        }
+
+        if (options.length === 0) {
+            // No matches, do nothing
+            clearAutocomplete();
+            return;
+        } else if (options.length === 1) {
+            // Single match, autocomplete inline
+            const completion = options[0];
+            const newValue = beforeCursor.slice(0, beforeCursor.length - arg.length) + completion + ' ';
+            input.value = newValue + currentValue.slice(cursorPos);
+            input.selectionStart = input.selectionEnd = newValue.length;
+            clearAutocomplete();
+        } else {
+            // Multiple matches, show dropdown
+            showAutocompleteDropdown(input, options);
+        }
+    }
+
+    function clearAutocomplete() {
+        if (autocompleteContainer) {
+            autocompleteContainer.remove();
+            autocompleteContainer = null;
+        }
+    }
+
+    function showAutocompleteDropdown(input, options) {
+        clearAutocomplete();
+        autocompleteContainer = document.createElement('div');
+        autocompleteContainer.style.position = 'absolute';
+        autocompleteContainer.style.background = '#181a1b';
+        autocompleteContainer.style.border = '1px solid #8ae234';
+        autocompleteContainer.style.color = '#eee';
+        autocompleteContainer.style.fontFamily = 'monospace';
+        autocompleteContainer.style.fontSize = '14px';
+        autocompleteContainer.style.maxHeight = '150px';
+        autocompleteContainer.style.overflowY = 'auto';
+        autocompleteContainer.style.zIndex = '1000';
+
+        // Position below input
+        const rect = input.getBoundingClientRect();
+        autocompleteContainer.style.left = rect.left + 'px';
+        autocompleteContainer.style.top = rect.bottom + 'px';
+        autocompleteContainer.style.minWidth = rect.width + 'px';
+
+        options.forEach(option => {
+            const optionDiv = document.createElement('div');
+            optionDiv.textContent = option;
+            optionDiv.style.padding = '2px 5px';
+            optionDiv.style.cursor = 'pointer';
+            optionDiv.addEventListener('mousedown', (e) => {
+                e.preventDefault();
+                selectAutocompleteOption(input, option);
+            });
+            autocompleteContainer.appendChild(optionDiv);
+        });
+
+        document.body.appendChild(autocompleteContainer);
+    }
+
+    function selectAutocompleteOption(input, option) {
+        const currentValue = input.value;
+        const cursorPos = input.selectionStart;
+        const beforeCursor = currentValue.slice(0, cursorPos);
+        const tokens = beforeCursor.trim().split(/\s+/);
+        const arg = tokens.length > 1 ? tokens[tokens.length - 1] : '';
+
+        const newValue = beforeCursor.slice(0, beforeCursor.length - arg.length) + option + ' ';
+        input.value = newValue + currentValue.slice(cursorPos);
+        input.selectionStart = input.selectionEnd = newValue.length;
+        clearAutocomplete();
+    }
 
     // Add blinking cursor effect
     input.style.caretColor = '#8ae234';
