@@ -20,7 +20,7 @@ body {
 
 .prompt {
     color: #8ae234;
-    font-weight: bold;
+    /* font-weight: bold; */
 }
 
 .cwd {
