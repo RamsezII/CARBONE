@@ -42,7 +42,8 @@ function printPrompt() {
 
     // $ (prompt symbol)
     const dollarSpan = document.createElement('span');
-    dollarSpan.textContent = ' $';
+    dollarSpan.textContent = '$';
+    dollarSpan.style.marginLeft = '0.25em';
     div.appendChild(dollarSpan);
 
     // Zone éditable
@@ -65,7 +66,7 @@ function printPrompt() {
         display: 'inline-block',
         minWidth: '2ch',
         whiteSpace: 'pre',
-        marginLeft: '0.25em',
+        marginLeft: '0.5em', // espace après le $
         padding: 0
     });
     div.appendChild(input);
