@@ -51,7 +51,7 @@ function printPrompt() {
             const cmd = input.value;
             history.push(cmd);
             historyIndex = history.length;
-            div.innerHTML = `<span class="prompt">${hostname}</span>:<span class="cwd">${cwd}</span>$ ${cmd}`;
+            // On ne modifie plus le innerHTML ici, on laisse handleCommand afficher le log
             await handleCommand(cmd);
             printPrompt();
             terminal.scrollTop = terminal.scrollHeight;
