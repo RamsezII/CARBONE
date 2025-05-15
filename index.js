@@ -221,11 +221,18 @@ async function handleCommand(cmd) {
     const output = document.createElement('div');
     output.className = 'output';
 
-    // Affiche le chemin courant avant chaque résultat de commande
+    // Affiche le chemin courant avant chaque résultat de commande, au même format que le prompt
     const pathLine = document.createElement('div');
-    pathLine.style.color = '#8ae234';
-    pathLine.style.fontFamily = 'monospace';
-    pathLine.textContent = `${cwd}$ ${cmd}`;
+    pathLine.className = 'input-line';
+    pathLine.innerHTML = `<span class="prompt">${hostname}</span>:`;
+    const cwdLink = document.createElement('a');
+    cwdLink.href = baseUrl + cwd.replace(/^\/+/, '');
+    cwdLink.textContent = baseUrl.replace(/^https?:\/\//, '') + cwd;
+    cwdLink.className = 'cwd';
+    cwdLink.target = '_blank';
+    cwdLink.rel = 'noopener noreferrer';
+    pathLine.appendChild(cwdLink);
+    pathLine.innerHTML += `$ ${cmd}`;
     terminal.appendChild(pathLine);
 
     let args = cmd.trim().split(/\s+/);
