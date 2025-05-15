@@ -9,15 +9,19 @@ body {
 }
 
 #terminal {
-    width: 90vw;
-    height: 90vh;
-    margin: 2vh auto;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    padding: 32px 0 0 0;
     background: #181a1b;
-    padding: 20px;
-    border-radius: 10px;
+    border-radius: 0;
     box-sizing: border-box;
     overflow-y: auto;
-    box-shadow: 0 0 20px #1118;
+    box-shadow: none;
+    z-index: 1;
     font-weight: normal;
 }
 
