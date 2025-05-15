@@ -57,9 +57,10 @@ async function fetchDir(path) {
     try {
         // Debug output
         const debugOutput = document.createElement('div');
-        debugOutput.style.color = '#f00';
+        debugOutput.style.color = '#bbb'; // light gray
+        debugOutput.style.fontStyle = 'italic';
         debugOutput.style.whiteSpace = 'pre-wrap';
-        debugOutput.textContent = `DEBUG: fetchDir URL: ${fullPath}`;
+        debugOutput.textContent = fullPath;
         terminal.appendChild(debugOutput);
         let res = await fetch(fullPath);
         if (res.ok) {
