@@ -134,7 +134,8 @@ async function handleCommand(cmd) {
             cwd = "/";
         } else {
             let newPath = base + target;
-            if (!newPath.endsWith('/')) newPath += '/';
+            if (!newPath.endsWith('/'))
+                newPath += '/';
             newPath = sanitizePath(newPath);
             // Debug output
             const debugOutput = document.createElement('div');
@@ -178,5 +179,6 @@ async function handleCommand(cmd) {
 printPrompt();
 terminal.addEventListener('click', () => {
     const lastInput = terminal.querySelector('input:last-of-type');
-    if (lastInput) lastInput.focus();
+    if (lastInput)
+        lastInput.focus();
 });
