@@ -32,7 +32,10 @@ function printPrompt() {
     div.appendChild(cwdLink);
     div.innerHTML += `$ `;
 
-    const input = document.createElement('input');
+    // Remplacer input par un span contenteditable pour un rendu terminal natif
+    const input = document.createElement('span');
+    input.contentEditable = 'true';
+    input.spellcheck = false;
     input.autofocus = true;
     Object.assign(input.style, {
         marginLeft: '0.25em',
@@ -46,29 +49,30 @@ function printPrompt() {
         paddingLeft: '0.25em',
         caretColor: '#8ae234',
         lineHeight: '1.5em',
-        paddingTop: '2px',
-        paddingBottom: '2px',
-        boxSizing: 'border-box',
-        height: '1.5em',
-        verticalAlign: 'middle'
+        minHeight: '1.5em',
+        verticalAlign: 'baseline',
+        display: 'inline-block',
+        minWidth: '2ch',
+        whiteSpace: 'pre',
     });
     div.appendChild(input);
 
     terminal.appendChild(div);
     input.focus();
 
+    // Gestion clavier adaptée à contenteditable
     input.addEventListener('keydown', async (e) => {
         if (e.key === 'Enter') {
-            const cmd = input.value;
+            e.preventDefault();
+            const cmd = input.textContent;
             history.push(cmd);
             historyIndex = history.length;
-            // Figer la ligne de saisie : remplacer l'input par du texte
+            // Figer la ligne de saisie : remplacer le span par du texte
             const parent = input.parentElement;
             const typed = document.createElement('span');
-            typed.textContent = input.value;
+            typed.textContent = input.textContent;
             typed.style.marginLeft = input.style.marginLeft;
             parent.replaceChild(typed, input);
-            // On ne modifie plus le innerHTML ici, on laisse handleCommand afficher le log
             await handleCommand(cmd);
             printPrompt();
             terminal.scrollTop = terminal.scrollHeight;
@@ -77,15 +81,15 @@ function printPrompt() {
         else if (e.key === 'ArrowUp') {
             if (historyIndex > 0) {
                 historyIndex--;
-                input.value = history[historyIndex] || "";
+                input.textContent = history[historyIndex] || "";
             }
             e.preventDefault();
         } else if (e.key === 'ArrowDown') {
             if (historyIndex < history.length - 1) {
                 historyIndex++;
-                input.value = history[historyIndex] || "";
+                input.textContent = history[historyIndex] || "";
             } else {
-                input.value = "";
+                input.textContent = "";
                 historyIndex = history.length;
             }
             e.preventDefault();
@@ -100,8 +104,8 @@ function printPrompt() {
 
 // Autocomplete logic (moved outside printPrompt)
 async function handleAutocomplete(input) {
-    const currentValue = input.value;
-    const cursorPos = input.selectionStart;
+    const currentValue = input.textContent;
+    const cursorPos = window.getSelection().getRangeAt(0).startOffset;
 
     // Split input into command and args
     const beforeCursor = currentValue.slice(0, cursorPos);
@@ -129,8 +133,13 @@ async function handleAutocomplete(input) {
         // Single match, autocomplete inline
         const completion = options[0];
         const newValue = beforeCursor.slice(0, beforeCursor.length - arg.length) + completion + ' ';
-        input.value = newValue + currentValue.slice(cursorPos);
-        input.selectionStart = input.selectionEnd = newValue.length;
+        input.textContent = newValue + currentValue.slice(cursorPos);
+        const range = document.createRange();
+        const sel = window.getSelection();
+        range.setStart(input.childNodes[0], newValue.length);
+        range.collapse(true);
+        sel.removeAllRanges();
+        sel.addRange(range);
         clearAutocomplete();
     } else {
         // Multiple matches, show dropdown
@@ -182,15 +191,20 @@ function showAutocompleteDropdown(input, options) {
 }
 
 function selectAutocompleteOption(input, option) {
-    const currentValue = input.value;
-    const cursorPos = input.selectionStart;
+    const currentValue = input.textContent;
+    const cursorPos = window.getSelection().getRangeAt(0).startOffset;
     const beforeCursor = currentValue.slice(0, cursorPos);
     const tokens = beforeCursor.trim().split(/\s+/);
     const arg = tokens.length > 1 ? tokens[tokens.length - 1] : '';
 
     const newValue = beforeCursor.slice(0, beforeCursor.length - arg.length) + option + ' ';
-    input.value = newValue + currentValue.slice(cursorPos);
-    input.selectionStart = input.selectionEnd = newValue.length;
+    input.textContent = newValue + currentValue.slice(cursorPos);
+    const range = document.createRange();
+    const sel = window.getSelection();
+    range.setStart(input.childNodes[0], newValue.length);
+    range.collapse(true);
+    sel.removeAllRanges();
+    sel.addRange(range);
     clearAutocomplete();
 }
 
@@ -309,7 +323,7 @@ if (!terminal.querySelector('input')) {
     printPrompt();
 }
 terminal.addEventListener('click', () => {
-    const lastInput = terminal.querySelector('input:last-of-type');
+    const lastInput = terminal.querySelector('span[contenteditable="true"]:last-of-type');
     if (lastInput)
         lastInput.focus();
 });
