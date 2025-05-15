@@ -29,7 +29,8 @@ function printPrompt() {
     // CWD
     const cwdLink = document.createElement('a');
     cwdLink.href = baseUrl.replace(/\/+$/, '') + "/" + cwd.replace(/^\/+/, '');
-    const content = (baseUrl.replace(/^https?:\/\//, '') + cwd).replace(/\/+$/, '');
+    let content = baseUrl.replace(/^https?:\/\//, '').replace(/\/+$/, '');
+    content += '/' + cwd.replace(/^\/+/, '');
     cwdLink.textContent = content;
     cwdLink.className = 'cwd';
     cwdLink.target = '_blank';
