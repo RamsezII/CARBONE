@@ -58,7 +58,7 @@ function printPrompt() {
             historyIndex = history.length;
             // On ne modifie plus le innerHTML ici, on laisse handleCommand afficher le log
             await handleCommand(cmd);
-            // printPrompt();
+            printPrompt();
             terminal.scrollTop = terminal.scrollHeight;
         }
         // Up/down for history
