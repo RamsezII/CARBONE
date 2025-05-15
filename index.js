@@ -15,11 +15,6 @@ function printPrompt() {
     const div = document.createElement('div');
     div.className = 'input-line';
 
-    // Correction du double slash dans l'affichage du chemin
-    let displayCwd = cwd.replace(/\/+/g, '/');
-    if (displayCwd !== '/' && displayCwd.endsWith('/')) displayCwd = displayCwd.slice(0, -1);
-    if (!displayCwd.startsWith('/')) displayCwd = '/' + displayCwd;
-
     // Prompt
     const promptSpan = document.createElement('span');
     promptSpan.className = 'prompt';
@@ -33,60 +28,40 @@ function printPrompt() {
 
     // CWD
     const cwdLink = document.createElement('a');
-    cwdLink.href = baseUrl.replace(/\/+$/, '') + displayCwd.replace(/^\/+/, '');
-    cwdLink.textContent = baseUrl.replace(/^https?:\/\//, '') + displayCwd;
+    cwdLink.href = baseUrl.replace(/\/+$/, '') + cwd.replace(/^\/+/, '');
+    cwdLink.textContent = baseUrl.replace(/^https?:\/\//, '') + cwd;
     cwdLink.className = 'cwd';
     cwdLink.target = '_blank';
     cwdLink.rel = 'noopener noreferrer';
     div.appendChild(cwdLink);
 
-    // $ (prompt symbol)
+    // $
     const dollarSpan = document.createElement('span');
-    dollarSpan.textContent = '$';
-    dollarSpan.style.marginLeft = '0.25em';
+    dollarSpan.className = 'dollar';
+    dollarSpan.textContent = ' $ ';
     div.appendChild(dollarSpan);
 
-    // Zone éditable
-    const input = document.createElement('span');
-    input.contentEditable = 'true';
-    input.spellcheck = false;
+    // Input
+    const input = document.createElement('input');
+    input.type = 'text';
     input.autofocus = true;
-    Object.assign(input.style, {
-        background: 'transparent',
-        border: 'none',
-        color: '#eee',
-        fontFamily: 'monospace',
-        fontSize: '1em',
-        outline: 'none',
-        flex: '1',
-        caretColor: '#8ae234',
-        lineHeight: '1.5em',
-        minHeight: '1.5em',
-        verticalAlign: 'baseline',
-        display: 'inline-block',
-        minWidth: '2ch',
-        whiteSpace: 'pre',
-        marginLeft: '0.5em', // espace après le $
-        padding: 0
-    });
+    input.spellcheck = false;
+    input.className = 'terminal-input';
     div.appendChild(input);
 
     terminal.appendChild(div);
     input.focus();
 
-    // Gestion clavier adaptée à contenteditable
     input.addEventListener('keydown', async (e) => {
         if (e.key === 'Enter') {
-            e.preventDefault();
-            const cmd = input.textContent;
+            const cmd = input.value;
             history.push(cmd);
             historyIndex = history.length;
-            // Figer la ligne de saisie : remplacer le span par du texte
-            const parent = input.parentElement;
+            // Figer la ligne de saisie
             const typed = document.createElement('span');
-            typed.textContent = input.textContent;
-            typed.style.marginLeft = input.style.marginLeft;
-            parent.replaceChild(typed, input);
+            typed.className = 'typed-cmd';
+            typed.textContent = input.value;
+            div.replaceChild(typed, input);
             await handleCommand(cmd);
             printPrompt();
             terminal.scrollTop = terminal.scrollHeight;
@@ -95,15 +70,15 @@ function printPrompt() {
         else if (e.key === 'ArrowUp') {
             if (historyIndex > 0) {
                 historyIndex--;
-                input.textContent = history[historyIndex] || "";
+                input.value = history[historyIndex] || "";
             }
             e.preventDefault();
         } else if (e.key === 'ArrowDown') {
             if (historyIndex < history.length - 1) {
                 historyIndex++;
-                input.textContent = history[historyIndex] || "";
+                input.value = history[historyIndex] || "";
             } else {
-                input.textContent = "";
+                input.value = "";
                 historyIndex = history.length;
             }
             e.preventDefault();
@@ -118,8 +93,8 @@ function printPrompt() {
 
 // Autocomplete logic (moved outside printPrompt)
 async function handleAutocomplete(input) {
-    const currentValue = input.textContent;
-    const cursorPos = window.getSelection().getRangeAt(0).startOffset;
+    const currentValue = input.value;
+    const cursorPos = input.selectionStart;
 
     // Split input into command and args
     const beforeCursor = currentValue.slice(0, cursorPos);
@@ -147,13 +122,8 @@ async function handleAutocomplete(input) {
         // Single match, autocomplete inline
         const completion = options[0];
         const newValue = beforeCursor.slice(0, beforeCursor.length - arg.length) + completion + ' ';
-        input.textContent = newValue + currentValue.slice(cursorPos);
-        const range = document.createRange();
-        const sel = window.getSelection();
-        range.setStart(input.childNodes[0], newValue.length);
-        range.collapse(true);
-        sel.removeAllRanges();
-        sel.addRange(range);
+        input.value = newValue + currentValue.slice(cursorPos);
+        input.setSelectionRange(newValue.length, newValue.length);
         clearAutocomplete();
     } else {
         // Multiple matches, show dropdown
@@ -205,20 +175,15 @@ function showAutocompleteDropdown(input, options) {
 }
 
 function selectAutocompleteOption(input, option) {
-    const currentValue = input.textContent;
-    const cursorPos = window.getSelection().getRangeAt(0).startOffset;
+    const currentValue = input.value;
+    const cursorPos = input.selectionStart;
     const beforeCursor = currentValue.slice(0, cursorPos);
     const tokens = beforeCursor.trim().split(/\s+/);
     const arg = tokens.length > 1 ? tokens[tokens.length - 1] : '';
 
     const newValue = beforeCursor.slice(0, beforeCursor.length - arg.length) + option + ' ';
-    input.textContent = newValue + currentValue.slice(cursorPos);
-    const range = document.createRange();
-    const sel = window.getSelection();
-    range.setStart(input.childNodes[0], newValue.length);
-    range.collapse(true);
-    sel.removeAllRanges();
-    sel.addRange(range);
+    input.value = newValue + currentValue.slice(cursorPos);
+    input.setSelectionRange(newValue.length, newValue.length);
     clearAutocomplete();
 }
 
@@ -337,7 +302,7 @@ if (!terminal.querySelector('input')) {
     printPrompt();
 }
 terminal.addEventListener('click', () => {
-    const lastInput = terminal.querySelector('span[contenteditable="true"]:last-of-type');
+    const lastInput = terminal.querySelector('input.terminal-input:last-of-type');
     if (lastInput)
         lastInput.focus();
 });

@@ -35,12 +35,51 @@ body {
 
 /* Harmonisation du prompt et de la zone éditable pour un rendu terminal natif */
 .input-line {
-    display: flex;
-    align-items: baseline;
     font-family: "Fira Mono", "Consolas", monospace;
     font-size: 1em;
     line-height: 1.5em;
-    min-height: 1.5em;
+    color: #eee;
+    display: flex;
+    align-items: baseline;
+    margin: 0;
+    padding: 0;
+}
+
+.input-line .prompt {
+    color: #8ae234;
+    font-weight: bold;
+}
+
+.input-line .cwd {
+    color: #729fcf;
+    text-decoration: none;
+    margin: 0 0.2em;
+}
+
+.input-line .dollar {
+    color: #fff;
+    margin-right: 0.2em;
+}
+
+.input-line .terminal-input {
+    background: transparent;
+    border: none;
+    color: #eee;
+    font-family: inherit;
+    font-size: 1em;
+    outline: none;
+    flex: 1;
+    line-height: 1.5em;
+    min-width: 2ch;
+    padding: 0;
+    margin: 0;
+}
+
+.input-line .typed-cmd {
+    color: #eee;
+    font-family: inherit;
+    font-size: 1em;
+    line-height: 1.5em;
     margin: 0;
     padding: 0;
 }
