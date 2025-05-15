@@ -237,20 +237,6 @@ async function handleCommand(cmd) {
     if (displayCwd !== '/' && displayCwd.endsWith('/')) displayCwd = displayCwd.slice(0, -1);
     if (!displayCwd.startsWith('/')) displayCwd = '/' + displayCwd;
 
-    // Affiche le chemin courant avant chaque résultat de commande, au même format que le prompt
-    const pathLine = document.createElement('div');
-    pathLine.className = 'input-line';
-    pathLine.innerHTML = `<span class="prompt">${hostname}</span>:`;
-    const cwdLink = document.createElement('a');
-    cwdLink.href = baseUrl.replace(/\/+$/, '') + displayCwd.replace(/^\/+/, '');
-    cwdLink.textContent = baseUrl.replace(/^https?:\/\//, '') + displayCwd;
-    cwdLink.className = 'cwd';
-    cwdLink.target = '_blank';
-    cwdLink.rel = 'noopener noreferrer';
-    pathLine.appendChild(cwdLink);
-    pathLine.innerHTML += `$ ${cmd}`;
-    terminal.appendChild(pathLine);
-
     let args = cmd.trim().split(/\s+/);
     let command = args[0];
     let base = cwd.endsWith('/') ? cwd : cwd + '/';
