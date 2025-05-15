@@ -56,6 +56,12 @@ function printPrompt() {
             const cmd = input.value;
             history.push(cmd);
             historyIndex = history.length;
+            // Figer la ligne de saisie : remplacer l'input par du texte
+            const parent = input.parentElement;
+            const typed = document.createElement('span');
+            typed.textContent = input.value;
+            typed.style.marginLeft = input.style.marginLeft;
+            parent.replaceChild(typed, input);
             // On ne modifie plus le innerHTML ici, on laisse handleCommand afficher le log
             await handleCommand(cmd);
             printPrompt();
