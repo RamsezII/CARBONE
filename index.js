@@ -138,9 +138,10 @@ async function handleCommand(cmd) {
             newPath = sanitizePath(newPath);
             // Debug output
             const debugOutput = document.createElement('div');
-            debugOutput.style.color = '#f00';
+            debugOutput.style.color = '#bbb'; // light gray
+            debugOutput.style.fontStyle = 'italic';
             debugOutput.style.whiteSpace = 'pre-wrap';
-            debugOutput.textContent = `DEBUG: cd fetchDir URL: ${baseUrl + newPath.replace(/^\/+/, '')}`;
+            debugOutput.textContent = baseUrl + newPath.replace(/^\/+/, '');
             terminal.appendChild(debugOutput);
             // Vérifie si le dossier existe
             let files = await fetchDir(newPath);
