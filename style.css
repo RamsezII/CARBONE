@@ -47,7 +47,7 @@ body {
 
 .input-line .prompt {
     color: #8ae234;
-    font-weight: bold;
+    /* font-weight: bold; */
 }
 
 .input-line .cwd {
