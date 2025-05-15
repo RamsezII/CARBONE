@@ -12,7 +12,20 @@ const terminal = document.getElementById('terminal');
 function printPrompt() {
     const div = document.createElement('div');
     div.className = 'input-line';
-    div.innerHTML = `<span class="prompt">${hostname}</span>:<span class="cwd">${cwd}</span>$ <input autofocus />`;
+
+    // Create clickable link for cwd with baseUrl prefix
+    const cwdLink = document.createElement('a');
+    cwdLink.href = baseUrl + cwd.replace(/^\/+/, '');
+    cwdLink.textContent = baseUrl.replace(/^https?:\/\//, '') + cwd;
+    cwdLink.style.color = '#729fcf';
+    cwdLink.style.textDecoration = 'underline';
+    cwdLink.target = '_blank';
+    cwdLink.rel = 'noopener noreferrer';
+
+    div.innerHTML = `<span class="prompt">${hostname}</span>:`;
+    div.appendChild(cwdLink);
+    div.innerHTML += `$ <input autofocus />`;
+
     terminal.appendChild(div);
     const input = div.querySelector('input');
     input.focus();
