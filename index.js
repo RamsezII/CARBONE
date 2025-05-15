@@ -325,7 +325,10 @@ async function handleCommand(cmd) {
 }
 
 // Start terminal
-printPrompt();
+// Ne pas afficher le prompt deux fois au démarrage
+if (!terminal.querySelector('input')) {
+    printPrompt();
+}
 terminal.addEventListener('click', () => {
     const lastInput = terminal.querySelector('input:last-of-type');
     if (lastInput)
