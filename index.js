@@ -226,7 +226,7 @@ async function handleCommand(cmd) {
     const output = document.createElement('div');
     output.className = 'output';
 
-    // Correction du double slash et du format du chemin
+    // Normalise le chemin pour éviter les doubles slashs
     let displayCwd = cwd.replace(/\/+/g, '/');
     if (displayCwd !== '/' && displayCwd.endsWith('/')) displayCwd = displayCwd.slice(0, -1);
     if (!displayCwd.startsWith('/')) displayCwd = '/' + displayCwd;
@@ -247,8 +247,6 @@ async function handleCommand(cmd) {
 
     let args = cmd.trim().split(/\s+/);
     let command = args[0];
-
-    // Emplacement courant
     let base = cwd.endsWith('/') ? cwd : cwd + '/';
 
     // Sanitize path to prevent directory traversal outside root
@@ -264,36 +262,21 @@ async function handleCommand(cmd) {
         }
         return '/' + sanitized.join('/') + (path.endsWith('/') ? '/' : '');
     }
-
     cwd = sanitizePath(cwd);
 
     if (command === 'ls') {
         let files = await fetchDir(base);
-        if (!files || files.length === 0) {
-            output.textContent = "ls: cannot access: permission denied or not found or empty directory";
-        } else {
-            output.textContent = files.join('\n');
-        }
+        output.textContent = (!files || files.length === 0)
+            ? "ls: cannot access: permission denied or not found or empty directory"
+            : files.join('\n');
     } else if (command === 'cd') {
         let target = args[1];
         if (!target) {
             cwd = "/";
         } else {
             let newPath = base + target;
-            if (!newPath.endsWith('/'))
-                newPath += '/';
+            if (!newPath.endsWith('/')) newPath += '/';
             newPath = sanitizePath(newPath);
-            // Debug output
-            // Remove this block to avoid double URL display on cd command
-            /*
-            const debugOutput = document.createElement('div');
-            debugOutput.style.color = '#bbb'; // light gray
-            debugOutput.style.fontStyle = 'italic';
-            debugOutput.style.whiteSpace = 'pre-wrap';
-            debugOutput.textContent = baseUrl + newPath.replace(/^\/+/, '');
-            terminal.appendChild(debugOutput);
-            */
-            // Vérifie si le dossier existe
             let files = await fetchDir(newPath);
             if (!files) {
                 output.textContent = `cd: ${target}: No such directory`;
@@ -307,11 +290,9 @@ async function handleCommand(cmd) {
             output.textContent = "cat: missing file operand";
         } else {
             let content = await fetchFile(base + file);
-            if (content === null) {
-                output.textContent = `cat: ${file}: No such file`;
-            } else {
-                output.textContent = content;
-            }
+            output.textContent = (content === null)
+                ? `cat: ${file}: No such file`
+                : content;
         }
     } else if (command === 'help' || command === '?') {
         output.textContent = "Commands: ls, cd [dir], cat [file], help";
