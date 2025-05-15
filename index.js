@@ -109,7 +109,7 @@ async function handleAutocomplete(input) {
         options = commands.filter(c => c.startsWith(command));
     } else {
         // Autocomplete file or directory names in current directory
-        let base = cwd.endsWith('/') ? cwd : cwd + '/';
+        let base = cwd;
         let files = await fetchDir(base);
         if (!files) files = [];
         options = files.filter(f => f.startsWith(arg));
@@ -233,8 +233,10 @@ async function handleCommand(cmd) {
 
     // Normalise le chemin pour éviter les doubles slashs
     let displayCwd = cwd.replace(/\/+/g, '/');
-    if (displayCwd !== '/' && displayCwd.endsWith('/')) displayCwd = displayCwd.slice(0, -1);
-    if (!displayCwd.startsWith('/')) displayCwd = '/' + displayCwd;
+    if (displayCwd !== '/' && displayCwd.endsWith('/'))
+        displayCwd = displayCwd.slice(0, -1);
+    if (!displayCwd.startsWith('/'))
+        displayCwd = '/' + displayCwd;
 
     let args = cmd.trim().split(/\s+/);
     let command = args[0];
