@@ -64,8 +64,9 @@ async function fetchDir(path) {
         let res = await fetch(fullPath);
         if (res.ok) {
             let json = await res.json();
-            // Adapte selon ta structure (ici, ["file1.txt", "subdir/", ...])
-            return json.files || json;
+            // Adapte selon ta structure (ici, tableau d'objets avec {name, type, mtime, size})
+            // On retourne un tableau de noms de fichiers uniquement
+            return json.map(item => item.name);
         }
     } catch { }
     // fallback : parse HTML
