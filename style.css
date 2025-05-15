@@ -1,0 +1,53 @@
+body {
+    background: #232629;
+    color: #eee;
+    font-family: "Fira Mono", "Consolas", monospace;
+    margin: 0;
+    padding: 0;
+}
+
+#terminal {
+    width: 90vw;
+    height: 90vh;
+    margin: 2vh auto;
+    background: #181a1b;
+    padding: 20px;
+    border-radius: 10px;
+    box-sizing: border-box;
+    overflow-y: auto;
+    box-shadow: 0 0 20px #1118;
+}
+
+.prompt {
+    color: #8ae234;
+    font-weight: bold;
+}
+
+.cwd {
+    color: #729fcf;
+}
+
+.input-line {
+    display: flex;
+}
+
+.output {
+    white-space: pre-wrap;
+    color: #eee;
+    margin-left: 1em;
+}
+
+input {
+    background: transparent;
+    border: none;
+    color: #eee;
+    font-family: inherit;
+    font-size: 1em;
+    outline: none;
+    flex: 1;
+}
+
+::selection {
+    background: #3465a4;
+    color: #fff;
+}
