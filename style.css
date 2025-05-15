@@ -138,7 +138,7 @@ body {
 .output {
     white-space: pre-wrap;
     color: #eee;
-    margin-left: 1em;
+    /* margin-left: 1em; */
 }
 
 input {
