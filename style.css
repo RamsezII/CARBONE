@@ -20,7 +20,7 @@ body {
 
 .prompt {
     color: #8ae234;
-    /* font-weight: bold; */
+    font-weight: bold;
 }
 
 .cwd {
@@ -43,22 +43,25 @@ body {
     align-items: baseline;
     margin: 0;
     padding: 0;
+    font-weight: bold;
 }
 
 .input-line .prompt {
     color: #8ae234;
-    /* font-weight: bold; */
+    font-weight: bold;
 }
 
 .input-line .cwd {
     color: #729fcf;
     text-decoration: none;
     margin: 0 0.2em;
+    font-weight: bold;
 }
 
 .input-line .dollar {
     color: #fff;
     margin-right: 0.2em;
+    font-weight: bold;
 }
 
 .input-line .terminal-input {
@@ -73,6 +76,7 @@ body {
     min-width: 2ch;
     padding: 0;
     margin: 0;
+    font-weight: bold;
 }
 
 .input-line .typed-cmd {
@@ -82,6 +86,7 @@ body {
     line-height: 1.5em;
     margin: 0;
     padding: 0;
+    font-weight: bold;
 }
 
 .input-line>span,
