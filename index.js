@@ -17,17 +17,19 @@ function printPrompt() {
     const cwdLink = document.createElement('a');
     cwdLink.href = baseUrl + cwd.replace(/^\/+/, '');
     cwdLink.textContent = baseUrl.replace(/^https?:\/\//, '') + cwd;
-    cwdLink.style.color = '#729fcf';
-    cwdLink.style.textDecoration = 'underline';
+    cwdLink.className = 'cwd';
     cwdLink.target = '_blank';
     cwdLink.rel = 'noopener noreferrer';
 
     div.innerHTML = `<span class="prompt">${hostname}</span>:`;
     div.appendChild(cwdLink);
-    div.innerHTML += `$ <input autofocus />`;
+    div.innerHTML += `$ `;
+
+    const input = document.createElement('input');
+    input.autofocus = true;
+    div.appendChild(input);
 
     terminal.appendChild(div);
-    const input = div.querySelector('input');
     input.focus();
 
     input.addEventListener('keydown', async (e) => {
@@ -172,13 +174,6 @@ async function fetchDir(path) {
     const fullPath = baseUrl + path.replace(/^\/+/, '');
     // Fetch directory JSON directly from the directory path (nginx autoindex returns JSON)
     try {
-        // Debug output
-        const debugOutput = document.createElement('div');
-        debugOutput.style.color = '#bbb'; // light gray
-        debugOutput.style.fontStyle = 'italic';
-        debugOutput.style.whiteSpace = 'pre-wrap';
-        debugOutput.textContent = fullPath;
-        terminal.appendChild(debugOutput);
         let res = await fetch(fullPath);
         if (res.ok) {
             let json = await res.json();
@@ -186,7 +181,9 @@ async function fetchDir(path) {
             // On retourne un tableau de noms de fichiers uniquement
             return json.map(item => item.name);
         }
-    } catch { }
+    } catch (e) {
+        console.error("fetchDir error:", e);
+    }
     // fallback : parse HTML
     let res = await fetch(fullPath);
     let text = await res.text();

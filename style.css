@@ -25,6 +25,12 @@ body {
 
 .cwd {
     color: #729fcf;
+    text-decoration: none;
+}
+
+.cwd:hover {
+    text-decoration: underline;
+    cursor: pointer;
 }
 
 .input-line {
