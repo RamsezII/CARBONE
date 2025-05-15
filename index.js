@@ -1,5 +1,5 @@
 // Base URL for fetch requests
-const baseUrl = "https://shitstorm.ovh/";
+const baseUrl = "https://shitstorm.ovh";
 
 // Config
 let hostname = "3VE";
