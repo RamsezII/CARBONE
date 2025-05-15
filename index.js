@@ -15,10 +15,15 @@ function printPrompt() {
     const div = document.createElement('div');
     div.className = 'input-line';
 
+    // Correction du double slash dans l'affichage du chemin
+    let displayCwd = cwd.replace(/\/+/g, '/');
+    if (displayCwd !== '/' && displayCwd.endsWith('/')) displayCwd = displayCwd.slice(0, -1);
+    if (!displayCwd.startsWith('/')) displayCwd = '/' + displayCwd;
+
     // Create clickable link for cwd with baseUrl prefix
     const cwdLink = document.createElement('a');
-    cwdLink.href = baseUrl + cwd.replace(/^\/+/, '');
-    cwdLink.textContent = baseUrl.replace(/^https?:\/\//, '') + cwd;
+    cwdLink.href = baseUrl.replace(/\/+$/, '') + displayCwd.replace(/^\/+/, '');
+    cwdLink.textContent = baseUrl.replace(/^https?:\/\//, '') + displayCwd;
     cwdLink.className = 'cwd';
     cwdLink.target = '_blank';
     cwdLink.rel = 'noopener noreferrer';
@@ -231,7 +236,7 @@ async function handleCommand(cmd) {
     pathLine.className = 'input-line';
     pathLine.innerHTML = `<span class="prompt">${hostname}</span>:`;
     const cwdLink = document.createElement('a');
-    cwdLink.href = baseUrl.replace(/\/+$/, '') + displayCwd; // retire le slash final de baseUrl
+    cwdLink.href = baseUrl.replace(/\/+$/, '') + displayCwd.replace(/^\/+/, '');
     cwdLink.textContent = baseUrl.replace(/^https?:\/\//, '') + displayCwd;
     cwdLink.className = 'cwd';
     cwdLink.target = '_blank';
