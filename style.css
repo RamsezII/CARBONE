@@ -1,9 +1,7 @@
 body {
-    background-color: black;
-    color: #33ff33;
+    background-color: #2C2C2C;
+    color: #FFFFFF;
     font-family: monospace;
-    padding: 20px;
-    margin: 0;
 }
 
 #terminal {
@@ -17,4 +15,13 @@ body {
 
 .input:focus {
     outline: none;
+}
+
+.user {
+    color: #80ff80;
+    font-weight: bold;
+}
+
+.workingdir {
+    color: #4DA3FF;
 }
