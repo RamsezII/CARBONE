@@ -44,7 +44,13 @@ function printPrompt() {
         outline: 'none',
         flex: '1',
         paddingLeft: '0.25em',
-        caretColor: '#8ae234'
+        caretColor: '#8ae234',
+        lineHeight: '1.5em',
+        paddingTop: '2px',
+        paddingBottom: '2px',
+        boxSizing: 'border-box',
+        height: '1.5em',
+        verticalAlign: 'middle'
     });
     div.appendChild(input);
 
