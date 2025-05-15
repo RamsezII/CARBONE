@@ -226,8 +226,11 @@ async function handleCommand(cmd) {
     pathLine.className = 'input-line';
     pathLine.innerHTML = `<span class="prompt">${hostname}</span>:`;
     const cwdLink = document.createElement('a');
-    cwdLink.href = baseUrl + cwd.replace(/^\/+/, '');
-    cwdLink.textContent = baseUrl.replace(/^https?:\/\//, '') + cwd;
+    // Correction du double slash
+    let displayCwd = cwd;
+    if (displayCwd.startsWith('//')) displayCwd = displayCwd.replace(/^\/+/, '/');
+    cwdLink.href = baseUrl + displayCwd.replace(/^\/+/, '');
+    cwdLink.textContent = baseUrl.replace(/^https?:\/\//, '') + displayCwd;
     cwdLink.className = 'cwd';
     cwdLink.target = '_blank';
     cwdLink.rel = 'noopener noreferrer';
