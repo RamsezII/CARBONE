@@ -2,13 +2,14 @@ const terminal = document.getElementById('terminal');
 let input = document.querySelector('.input');
 
 let baseURL = window.location.href;
+baseURL = "~";
 
 let userIP = "visitor";
-let working_dir = baseURL;
+let working_dir = "";
 const hostname = "3VE";
 
 function formatPrompt(ip) {
-    return `<span class="user">${ip}@${hostname}</span>:<span class="workingdir">${working_dir}</span>$ `;
+    return `<span class="user">${ip}@${hostname}</span>:<span class="workingdir">${baseURL}${working_dir}</span>$ `;
 }
 
 function addLine(text) {
