@@ -1,3 +1,6 @@
+// Base URL for fetch requests
+const baseUrl = "https://shitstorm.ovh/carbone/";
+
 // Config
 let hostname = "3VE";
 let cwd = "/";
@@ -49,15 +52,16 @@ function printPrompt() {
 
 // Helper: fetch directory (assume nginx autoindex returns JSON or HTML)
 async function fetchDir(path) {
+    const fullPath = baseUrl + path.replace(/^\/+/, '');
     // Fetch directory JSON directly from the directory path (nginx autoindex returns JSON)
     try {
         // Debug output
         const debugOutput = document.createElement('div');
         debugOutput.style.color = '#f00';
         debugOutput.style.whiteSpace = 'pre-wrap';
-        debugOutput.textContent = `DEBUG: fetchDir URL: ${path}`;
+        debugOutput.textContent = `DEBUG: fetchDir URL: ${fullPath}`;
         terminal.appendChild(debugOutput);
-        let res = await fetch(path);
+        let res = await fetch(fullPath);
         if (res.ok) {
             let json = await res.json();
             // Adapte selon ta structure (ici, ["file1.txt", "subdir/", ...])
@@ -65,7 +69,7 @@ async function fetchDir(path) {
         }
     } catch { }
     // fallback : parse HTML
-    let res = await fetch(path);
+    let res = await fetch(fullPath);
     let text = await res.text();
     let files = [];
     // Parse HTML (nginx autoindex) :
@@ -82,7 +86,8 @@ async function fetchDir(path) {
 
 // Helper: fetch file
 async function fetchFile(path) {
-    let res = await fetch(path);
+    const fullPath = baseUrl + path.replace(/^\/+/, '');
+    let res = await fetch(fullPath);
     if (!res.ok) return null;
     return await res.text();
 }
@@ -133,7 +138,7 @@ async function handleCommand(cmd) {
             const debugOutput = document.createElement('div');
             debugOutput.style.color = '#f00';
             debugOutput.style.whiteSpace = 'pre-wrap';
-            debugOutput.textContent = `DEBUG: cd fetchDir URL: ${newPath}`;
+            debugOutput.textContent = `DEBUG: cd fetchDir URL: ${baseUrl + newPath.replace(/^\/+/, '')}`;
             terminal.appendChild(debugOutput);
             // Vérifie si le dossier existe
             let files = await fetchDir(newPath);
