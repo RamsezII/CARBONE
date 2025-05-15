@@ -9,6 +9,8 @@ let historyIndex = 0;
 
 const terminal = document.getElementById('terminal');
 
+let autocompleteContainer = null;
+
 function printPrompt() {
     const div = document.createElement('div');
     div.className = 'input-line';
@@ -27,6 +29,18 @@ function printPrompt() {
 
     const input = document.createElement('input');
     input.autofocus = true;
+    Object.assign(input.style, {
+        marginLeft: '0.25em',
+        background: 'transparent',
+        border: 'none',
+        color: '#eee',
+        fontFamily: 'monospace',
+        fontSize: '1em',
+        outline: 'none',
+        flex: '1',
+        paddingLeft: '0.25em',
+        caretColor: '#8ae234'
+    });
     div.appendChild(input);
 
     terminal.appendChild(div);
@@ -65,108 +79,102 @@ function printPrompt() {
             await handleAutocomplete(input);
         }
     });
+}
 
-    // Container for autocomplete suggestions
-    let autocompleteContainer = null;
+// Autocomplete logic (moved outside printPrompt)
+async function handleAutocomplete(input) {
+    const currentValue = input.value;
+    const cursorPos = input.selectionStart;
 
-    async function handleAutocomplete(input) {
-        const currentValue = input.value;
-        const cursorPos = input.selectionStart;
+    // Split input into command and args
+    const beforeCursor = currentValue.slice(0, cursorPos);
+    const tokens = beforeCursor.trim().split(/\s+/);
+    const command = tokens[0] || '';
+    const arg = tokens.length > 1 ? tokens[tokens.length - 1] : '';
 
-        // Split input into command and args
-        const beforeCursor = currentValue.slice(0, cursorPos);
-        const tokens = beforeCursor.trim().split(/\s+/);
-        const command = tokens[0] || '';
-        const arg = tokens.length > 1 ? tokens[tokens.length - 1] : '';
-
-        // Determine autocomplete options
-        let options = [];
-
-        if (tokens.length === 1) {
-            // Autocomplete command names
-            const commands = ['ls', 'cd', 'cat', 'help', '?'];
-            options = commands.filter(c => c.startsWith(command));
-        } else {
-            // Autocomplete file or directory names in current directory
-            let base = cwd.endsWith('/') ? cwd : cwd + '/';
-            let files = await fetchDir(base);
-            if (!files) files = [];
-            options = files.filter(f => f.startsWith(arg));
-        }
-
-        if (options.length === 0) {
-            // No matches, do nothing
-            clearAutocomplete();
-            return;
-        } else if (options.length === 1) {
-            // Single match, autocomplete inline
-            const completion = options[0];
-            const newValue = beforeCursor.slice(0, beforeCursor.length - arg.length) + completion + ' ';
-            input.value = newValue + currentValue.slice(cursorPos);
-            input.selectionStart = input.selectionEnd = newValue.length;
-            clearAutocomplete();
-        } else {
-            // Multiple matches, show dropdown
-            showAutocompleteDropdown(input, options);
-        }
+    let options = [];
+    if (tokens.length === 1) {
+        // Autocomplete command names
+        const commands = ['ls', 'cd', 'cat', 'help', '?'];
+        options = commands.filter(c => c.startsWith(command));
+    } else {
+        // Autocomplete file or directory names in current directory
+        let base = cwd.endsWith('/') ? cwd : cwd + '/';
+        let files = await fetchDir(base);
+        if (!files) files = [];
+        options = files.filter(f => f.startsWith(arg));
     }
 
-    function clearAutocomplete() {
-        if (autocompleteContainer) {
-            autocompleteContainer.remove();
-            autocompleteContainer = null;
-        }
-    }
-
-    function showAutocompleteDropdown(input, options) {
+    if (options.length === 0) {
         clearAutocomplete();
-        autocompleteContainer = document.createElement('div');
-        autocompleteContainer.style.position = 'absolute';
-        autocompleteContainer.style.background = '#181a1b';
-        autocompleteContainer.style.border = '1px solid #8ae234';
-        autocompleteContainer.style.color = '#eee';
-        autocompleteContainer.style.fontFamily = 'monospace';
-        autocompleteContainer.style.fontSize = '14px';
-        autocompleteContainer.style.maxHeight = '150px';
-        autocompleteContainer.style.overflowY = 'auto';
-        autocompleteContainer.style.zIndex = '1000';
-
-        // Position below input
-        const rect = input.getBoundingClientRect();
-        autocompleteContainer.style.left = rect.left + 'px';
-        autocompleteContainer.style.top = rect.bottom + 'px';
-        autocompleteContainer.style.minWidth = rect.width + 'px';
-
-        options.forEach(option => {
-            const optionDiv = document.createElement('div');
-            optionDiv.textContent = option;
-            optionDiv.style.padding = '2px 5px';
-            optionDiv.style.cursor = 'pointer';
-            optionDiv.addEventListener('mousedown', (e) => {
-                e.preventDefault();
-                selectAutocompleteOption(input, option);
-            });
-            autocompleteContainer.appendChild(optionDiv);
-        });
-
-        document.body.appendChild(autocompleteContainer);
-    }
-
-    function selectAutocompleteOption(input, option) {
-        const currentValue = input.value;
-        const cursorPos = input.selectionStart;
-        const beforeCursor = currentValue.slice(0, cursorPos);
-        const tokens = beforeCursor.trim().split(/\s+/);
-        const arg = tokens.length > 1 ? tokens[tokens.length - 1] : '';
-
-        const newValue = beforeCursor.slice(0, beforeCursor.length - arg.length) + option + ' ';
+        return;
+    } else if (options.length === 1) {
+        // Single match, autocomplete inline
+        const completion = options[0];
+        const newValue = beforeCursor.slice(0, beforeCursor.length - arg.length) + completion + ' ';
         input.value = newValue + currentValue.slice(cursorPos);
         input.selectionStart = input.selectionEnd = newValue.length;
         clearAutocomplete();
+    } else {
+        // Multiple matches, show dropdown
+        showAutocompleteDropdown(input, options);
     }
+}
 
-    // Add blinking cursor effect
-    input.style.caretColor = '#8ae234';
+function clearAutocomplete() {
+    if (autocompleteContainer) {
+        autocompleteContainer.remove();
+        autocompleteContainer = null;
+    }
+}
+
+function showAutocompleteDropdown(input, options) {
+    clearAutocomplete();
+    autocompleteContainer = document.createElement('div');
+    Object.assign(autocompleteContainer.style, {
+        position: 'absolute',
+        background: '#181a1b',
+        border: '1px solid #8ae234',
+        color: '#eee',
+        fontFamily: 'monospace',
+        fontSize: '14px',
+        maxHeight: '150px',
+        overflowY: 'auto',
+        zIndex: '1000'
+    });
+
+    // Position below input (relative to viewport)
+    const rect = input.getBoundingClientRect();
+    autocompleteContainer.style.left = rect.left + window.scrollX + 'px';
+    autocompleteContainer.style.top = rect.bottom + window.scrollY + 'px';
+    autocompleteContainer.style.minWidth = rect.width + 'px';
+
+    options.forEach(option => {
+        const optionDiv = document.createElement('div');
+        optionDiv.textContent = option;
+        optionDiv.style.padding = '2px 5px';
+        optionDiv.style.cursor = 'pointer';
+        optionDiv.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            selectAutocompleteOption(input, option);
+        });
+        autocompleteContainer.appendChild(optionDiv);
+    });
+
+    document.body.appendChild(autocompleteContainer);
+}
+
+function selectAutocompleteOption(input, option) {
+    const currentValue = input.value;
+    const cursorPos = input.selectionStart;
+    const beforeCursor = currentValue.slice(0, cursorPos);
+    const tokens = beforeCursor.trim().split(/\s+/);
+    const arg = tokens.length > 1 ? tokens[tokens.length - 1] : '';
+
+    const newValue = beforeCursor.slice(0, beforeCursor.length - arg.length) + option + ' ';
+    input.value = newValue + currentValue.slice(cursorPos);
+    input.selectionStart = input.selectionEnd = newValue.length;
+    clearAutocomplete();
 }
 
 // Helper: fetch directory (assume nginx autoindex returns JSON or HTML)
