@@ -20,25 +20,37 @@ function printPrompt() {
     if (displayCwd !== '/' && displayCwd.endsWith('/')) displayCwd = displayCwd.slice(0, -1);
     if (!displayCwd.startsWith('/')) displayCwd = '/' + displayCwd;
 
-    // Create clickable link for cwd with baseUrl prefix
+    // Prompt
+    const promptSpan = document.createElement('span');
+    promptSpan.className = 'prompt';
+    promptSpan.textContent = hostname;
+    div.appendChild(promptSpan);
+
+    // :
+    const colonSpan = document.createElement('span');
+    colonSpan.textContent = ':';
+    div.appendChild(colonSpan);
+
+    // CWD
     const cwdLink = document.createElement('a');
     cwdLink.href = baseUrl.replace(/\/+$/, '') + displayCwd.replace(/^\/+/, '');
     cwdLink.textContent = baseUrl.replace(/^https?:\/\//, '') + displayCwd;
     cwdLink.className = 'cwd';
     cwdLink.target = '_blank';
     cwdLink.rel = 'noopener noreferrer';
-
-    div.innerHTML = `<span class="prompt">${hostname}</span>:`;
     div.appendChild(cwdLink);
-    div.innerHTML += `$ `;
 
-    // Remplacer input par un span contenteditable pour un rendu terminal natif
+    // $ (prompt symbol)
+    const dollarSpan = document.createElement('span');
+    dollarSpan.textContent = ' $';
+    div.appendChild(dollarSpan);
+
+    // Zone éditable
     const input = document.createElement('span');
     input.contentEditable = 'true';
     input.spellcheck = false;
     input.autofocus = true;
     Object.assign(input.style, {
-        marginLeft: '0.25em',
         background: 'transparent',
         border: 'none',
         color: '#eee',
@@ -46,7 +58,6 @@ function printPrompt() {
         fontSize: '1em',
         outline: 'none',
         flex: '1',
-        paddingLeft: '0.25em',
         caretColor: '#8ae234',
         lineHeight: '1.5em',
         minHeight: '1.5em',
@@ -54,6 +65,8 @@ function printPrompt() {
         display: 'inline-block',
         minWidth: '2ch',
         whiteSpace: 'pre',
+        marginLeft: '0.25em',
+        padding: 0
     });
     div.appendChild(input);
 
