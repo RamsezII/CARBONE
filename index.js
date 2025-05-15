@@ -221,16 +221,17 @@ async function handleCommand(cmd) {
     const output = document.createElement('div');
     output.className = 'output';
 
-    // Correction du double slash dans l'affichage du chemin
+    // Correction du double slash et du format du chemin
     let displayCwd = cwd.replace(/\/+/g, '/');
     if (displayCwd !== '/' && displayCwd.endsWith('/')) displayCwd = displayCwd.slice(0, -1);
     if (!displayCwd.startsWith('/')) displayCwd = '/' + displayCwd;
+
     // Affiche le chemin courant avant chaque résultat de commande, au même format que le prompt
     const pathLine = document.createElement('div');
     pathLine.className = 'input-line';
     pathLine.innerHTML = `<span class="prompt">${hostname}</span>:`;
     const cwdLink = document.createElement('a');
-    cwdLink.href = baseUrl + displayCwd.replace(/^\/+/, '');
+    cwdLink.href = baseUrl.replace(/\/+$/, '') + displayCwd; // retire le slash final de baseUrl
     cwdLink.textContent = baseUrl.replace(/^https?:\/\//, '') + displayCwd;
     cwdLink.className = 'cwd';
     cwdLink.target = '_blank';
