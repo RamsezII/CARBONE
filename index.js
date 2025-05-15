@@ -221,6 +221,13 @@ async function handleCommand(cmd) {
     const output = document.createElement('div');
     output.className = 'output';
 
+    // Affiche le chemin courant avant chaque résultat de commande
+    const pathLine = document.createElement('div');
+    pathLine.style.color = '#8ae234';
+    pathLine.style.fontFamily = 'monospace';
+    pathLine.textContent = `${cwd}$ ${cmd}`;
+    terminal.appendChild(pathLine);
+
     let args = cmd.trim().split(/\s+/);
     let command = args[0];
 
