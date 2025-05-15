@@ -33,8 +33,47 @@ body {
     cursor: pointer;
 }
 
+/* Harmonisation du prompt et de la zone éditable pour un rendu terminal natif */
 .input-line {
     display: flex;
+    align-items: baseline;
+    font-family: "Fira Mono", "Consolas", monospace;
+    font-size: 1em;
+    line-height: 1.5em;
+    min-height: 1.5em;
+    margin: 0;
+    padding: 0;
+}
+
+.input-line>span,
+.input-line>a,
+.input-line>.cwd {
+    line-height: 1.5em;
+    font-size: 1em;
+    font-family: inherit;
+    vertical-align: baseline;
+    margin: 0;
+    padding: 0;
+    background: none;
+    border: none;
+}
+
+.input-line [contenteditable="true"] {
+    outline: none;
+    min-width: 2ch;
+    color: #eee;
+    background: none;
+    border: none;
+    font-family: inherit;
+    font-size: 1em;
+    line-height: 1.5em;
+    min-height: 1.5em;
+    vertical-align: baseline;
+    margin: 0;
+    padding: 0 0.25em;
+    display: inline-block;
+    white-space: pre;
+    caret-color: #8ae234;
 }
 
 .output {
