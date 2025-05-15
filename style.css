@@ -58,6 +58,21 @@ body {
     border: none;
 }
 
+/* Forcer l'alignement et le style sur tous les enfants du prompt */
+.input-line>span,
+.input-line>a {
+    font-family: inherit;
+    font-size: 1em;
+    line-height: 1.5em;
+    vertical-align: baseline;
+    color: inherit;
+    background: none;
+    border: none;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 .input-line [contenteditable="true"] {
     outline: none;
     min-width: 2ch;
@@ -69,8 +84,8 @@ body {
     line-height: 1.5em;
     min-height: 1.5em;
     vertical-align: baseline;
-    margin: 0;
-    padding: 0 0.25em;
+    margin-left: 0.5em;
+    padding: 0;
     display: inline-block;
     white-space: pre;
     caret-color: #8ae234;
